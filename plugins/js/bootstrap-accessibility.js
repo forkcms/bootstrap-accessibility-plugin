@@ -135,7 +135,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
   // Modal Extension
   // ===============================
 
-  $('.modal-dialog').attr( {'role' : 'document'})
+  $('.modal-dialog').attr( {'data-a11y-role' : 'document'})
     var modalhide =   $.fn.modal.Constructor.prototype.hide
     $.fn.modal.Constructor.prototype.hide = function(){
        modalhide.apply(this, arguments)
@@ -170,13 +170,13 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
       , $par
       , firstItem
       , focusDelay = 200
-      , menus = $(toggle).parent().find('ul').attr('role','menu')
-      , lis = menus.find('li').attr('role','presentation')
+      , menus = $(toggle).parent().find('ul').attr('data-ay11-role','menu')
+      , lis = menus.find('li')
 
-    // add menuitem role and tabIndex to dropdown links
-    lis.find('a').attr({'role':'menuitem', 'tabIndex':'-1'})
+    // add menuitem ay11 role
+    lis.find('a').attr({'data-ay11-role':'menuitem'})
     // add aria attributes to dropdown toggle
-    $(toggle).attr({ 'aria-haspopup':'true', 'aria-expanded': 'false'})
+    $(toggle).attr({'aria-expanded': 'false'})
 
     $(toggle).parent()
       // Update aria-expanded when open
@@ -186,7 +186,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
         $toggle.attr('aria-expanded','true')
         $toggle.on('keydown.bs.dropdown', $.proxy(function (ev) {
           setTimeout(function() {
-            firstItem = $('.dropdown-menu [role=menuitem]:visible', $par)[0]
+            firstItem = $('.dropdown-menu [data-ay11-role=menuitem]:visible', $par)[0]
             try{ firstItem.focus()} catch(ex) {}
           }, focusDelay)
         }, this))
@@ -215,19 +215,19 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
           }
         }, 150)
        })
-      .on('keydown.bs.dropdown.data-api', toggle + ', [role=menu]' , $.fn.dropdown.Constructor.prototype.keydown);
+      .on('keydown.bs.dropdown.data-api', toggle + ', [data-ay11-role=menu]' , $.fn.dropdown.Constructor.prototype.keydown);
 
   // Tab Extension
   // ===============================
-  
+
   var $tablist = $('.nav-tabs, .nav-pills')
         , $lis = $tablist.children('li')
         , $tabs = $tablist.find('[data-toggle="tab"], [data-toggle="pill"]')
 
     if($tabs){
-      $tablist.attr('role', 'tablist')
-      $lis.attr('role', 'presentation')
-      $tabs.attr('role', 'tab')
+      $tablist.attr('data-a11y-role', 'tablist')
+      $lis.attr('data-a11y-role', 'presentation')
+      $tabs.attr('data-a11y-role', 'tab')
     }
 
     $tabs.each(function( index ) {
@@ -239,24 +239,24 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
 
       if(tab.parent().hasClass('active')){
         tab.attr( { 'tabIndex' : '0', 'aria-selected' : 'true', 'aria-controls': tab.attr('href').substr(1) } )
-        tabpanel.attr({ 'role' : 'tabpanel', 'tabIndex' : '0', 'aria-hidden' : 'false', 'aria-labelledby':tabid })
+        tabpanel.attr({ 'data-a11y-role' : 'tabpanel', 'tabIndex' : '0', 'aria-hidden' : 'false', 'aria-labelledby':tabid })
       }else{
         tab.attr( { 'tabIndex' : '-1', 'aria-selected' : 'false', 'aria-controls': tab.attr('href').substr(1) } )
-        tabpanel.attr( { 'role' : 'tabpanel', 'tabIndex' : '-1', 'aria-hidden' : 'true', 'aria-labelledby':tabid } )
+        tabpanel.attr( { 'data-a11y-role' : 'tabpanel', 'tabIndex' : '-1', 'aria-hidden' : 'true', 'aria-labelledby':tabid } )
       }
     })
 
     $.fn.tab.Constructor.prototype.keydown = function (e) {
       var $this = $(this)
       , $items
-      , $ul = $this.closest('ul[role=tablist] ')
+      , $ul = $this.closest('ul[data-a11y-role=tablist] ')
       , index
       , k = e.which || e.keyCode
 
       $this = $(this)
       if (!/(37|38|39|40)/.test(k)) return
 
-      $items = $ul.find('[role=tab]:visible')
+      $items = $ul.find('[data-a11y-role=tab]:visible')
       index = $items.index($items.filter(':focus'))
 
       if (k == 38 || k == 37) index--                         // up & left
@@ -267,7 +267,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
       if(index == $items.length) index = 0
 
       var nextTab = $items.eq(index)
-      if(nextTab.attr('role') ==='tab'){
+      if(nextTab.attr('data-a11y-role') ==='tab'){
 
         nextTab.tab('show')      //Comment this line for dynamically loaded tabPabels, to save Ajax requests on arrow key navigation
         .focus()
@@ -293,6 +293,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
       element.filter('.tab-pane').attr({ 'aria-hidden' : false,'tabIndex' : '0' })
    }
 
+
   // Collapse Extension
   // ===============================
 
@@ -303,20 +304,27 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
         , parent  = colltab.attr('data-parent')
         , collparent = parent && $(parent)
         , collid = colltab.attr('id') || uniqueId('ui-collapse')
+        , parentpanel = collpanel.parent() // panel containing title and panel body
+        , parentfirstchild = (collparent) ? collparent.find('.panel.panel-default:first-child') : null // first child of containing accordion
+        , hasopenpanel = (collparent) ? collparent.find('.panel-collapse.in').length > 0 : false // true, if collapse parent has any panels with class 'in'; otherwise, false
 
           colltab.attr('id', collid)
 
           if(collparent){
-            colltab.attr({ 'role':'tab', 'aria-selected':'false', 'aria-expanded':'false' })
-            $(collparent).find('div:not(.collapse,.panel-body), h4').attr('role','presentation')
-            collparent.attr({ 'role' : 'tablist', 'aria-multiselectable' : 'true' })
+            colltab.attr({ 'aria-controls': collpanel.attr('id'), 'data-ay11-role':'tab', 'aria-expanded':'false' })
+            $(collparent).find('div:not(.collapse,.panel-body), h4').attr('data-ay11-role','presentation')
+            collparent.attr({ 'data-ay11-role' : 'tablist', 'aria-multiselectable' : 'true' })
+            collpanel.attr({ 'data-ay11-role':'tabpanel', 'aria-labelledby':collid })
 
-            if(collpanel.hasClass('in')){
-              colltab.attr({ 'aria-controls': collpanel.attr('id'), 'aria-selected':'true', 'aria-expanded':'true', 'tabindex':'0' })
-              collpanel.attr({ 'role':'tabpanel', 'tabindex':'0', 'aria-labelledby':collid, 'aria-hidden':'false' })
+            if(!hasopenpanel && parentpanel.is(parentfirstchild)) {
+              colltab.attr({ 'tabindex':'0' })
+              collpanel.attr({ 'tabindex':'-1' })
+            }else if(collpanel.hasClass('in')){
+              colltab.attr({ 'aria-expanded':'true', 'tabindex':'0' })
+              collpanel.attr({ 'tabindex':'0', 'aria-hidden':'false' })
             }else{
-              colltab.attr({'aria-controls' : collpanel.attr('id'), 'tabindex':'-1' })
-              collpanel.attr({ 'role':'tabpanel', 'tabindex':'-1', 'aria-labelledby':collid, 'aria-hidden':'true' })
+              colltab.attr({ 'tabindex':'-1' })
+              collpanel.attr({ 'tabindex':'-1', 'aria-hidden':'true' })
             }
           }
       })
@@ -339,15 +347,15 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
         if ($.support.transition) {
           this.$element.one($.support.transition.end, function(){
 
-              prevTab.attr({ 'aria-selected':'false','aria-expanded':'false', 'tabIndex':'-1' })
+              prevTab.attr({ 'aria-expanded':'false', 'tabIndex':'-1' })
               $prevPanel.attr({ 'aria-hidden' : 'true','tabIndex' : '-1'})
 
-              curTab.attr({ 'aria-selected':'true','aria-expanded':'true', 'tabIndex':'0' })
+              curTab.attr({ 'aria-expanded':'true', 'tabIndex':'0' })
 
               if($curPanel.hasClass('in')){
                 $curPanel.attr({ 'aria-hidden' : 'false','tabIndex' : '0' })
               }else{
-                curTab.attr({ 'aria-selected':'false','aria-expanded':'false'})
+                curTab.attr({ 'aria-expanded':'false'})
                 $curPanel.attr({ 'aria-hidden' : 'true','tabIndex' : '-1' })
               }
           })
@@ -360,7 +368,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
     $.fn.collapse.Constructor.prototype.keydown = function (e) {
       var $this = $(this)
       , $items
-      , $tablist = $this.closest('div[role=tablist] ')
+      , $tablist = $this.closest('div[data-ay11-role=tablist] ')
       , index
       , k = e.which || e.keyCode
 
@@ -368,7 +376,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
       if (!/(32|37|38|39|40)/.test(k)) return
       if(k==32) $this.click()
 
-      $items = $tablist.find('[role=tab]')
+      $items = $tablist.find('[data-ay11-role=tab]')
       index = $items.index($items.filter(':focus'))
 
       if (k == 38 || k == 37) index--                                        // up & left
@@ -384,7 +392,7 @@ CC0: http://creativecommons.org/publicdomain/zero/1.0/
     }
 
     $(document).on('keydown.collapse.data-api','[data-toggle="collapse"]' ,  $.fn.collapse.Constructor.prototype.keydown);
-    
+
 
 // Carousel Extension
   // ===============================
