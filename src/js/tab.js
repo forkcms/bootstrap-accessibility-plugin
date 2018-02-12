@@ -1,14 +1,14 @@
   // Tab Extension
   // ===============================
-  
+
   var $tablist = $('.nav-tabs, .nav-pills')
         , $lis = $tablist.children('li')
         , $tabs = $tablist.find('[data-toggle="tab"], [data-toggle="pill"]')
 
     if($tabs){
-      $tablist.attr('role', 'tablist')
-      $lis.attr('role', 'presentation')
-      $tabs.attr('role', 'tab')
+      $tablist.attr('data-a11y-role', 'tablist')
+      $lis.attr('data-a11y-role', 'presentation')
+      $tabs.attr('data-a11y-role', 'tab')
     }
 
     $tabs.each(function( index ) {
@@ -20,24 +20,24 @@
 
       if(tab.parent().hasClass('active')){
         tab.attr( { 'tabIndex' : '0', 'aria-selected' : 'true', 'aria-controls': tab.attr('href').substr(1) } )
-        tabpanel.attr({ 'role' : 'tabpanel', 'tabIndex' : '0', 'aria-hidden' : 'false', 'aria-labelledby':tabid })
+        tabpanel.attr({ 'data-a11y-role' : 'tabpanel', 'tabIndex' : '0', 'aria-hidden' : 'false', 'aria-labelledby':tabid })
       }else{
         tab.attr( { 'tabIndex' : '-1', 'aria-selected' : 'false', 'aria-controls': tab.attr('href').substr(1) } )
-        tabpanel.attr( { 'role' : 'tabpanel', 'tabIndex' : '-1', 'aria-hidden' : 'true', 'aria-labelledby':tabid } )
+        tabpanel.attr( { 'data-a11y-role' : 'tabpanel', 'tabIndex' : '-1', 'aria-hidden' : 'true', 'aria-labelledby':tabid } )
       }
     })
 
     $.fn.tab.Constructor.prototype.keydown = function (e) {
       var $this = $(this)
       , $items
-      , $ul = $this.closest('ul[role=tablist] ')
+      , $ul = $this.closest('ul[data-a11y-role=tablist] ')
       , index
       , k = e.which || e.keyCode
 
       $this = $(this)
       if (!/(37|38|39|40)/.test(k)) return
 
-      $items = $ul.find('[role=tab]:visible')
+      $items = $ul.find('[data-a11y-role=tab]:visible')
       index = $items.index($items.filter(':focus'))
 
       if (k == 38 || k == 37) index--                         // up & left
@@ -48,7 +48,7 @@
       if(index == $items.length) index = 0
 
       var nextTab = $items.eq(index)
-      if(nextTab.attr('role') ==='tab'){
+      if(nextTab.attr('data-a11y-role') ==='tab'){
 
         nextTab.tab('show')      //Comment this line for dynamically loaded tabPabels, to save Ajax requests on arrow key navigation
         .focus()
