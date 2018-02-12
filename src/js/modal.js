@@ -1,7 +1,7 @@
   // Modal Extension
   // ===============================
 
-  $('.modal-dialog').attr( {'role' : 'document'})
+  $('.modal-dialog').attr( {'data-a11y-role' : 'document'})
     var modalhide =   $.fn.modal.Constructor.prototype.hide
     $.fn.modal.Constructor.prototype.hide = function(){
        modalhide.apply(this, arguments)
