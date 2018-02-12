@@ -16,16 +16,16 @@
           colltab.attr('id', collid)
 
           if(collparent){
-            colltab.attr({ 'aria-controls': collpanel.attr('id'), 'role':'tab', 'aria-selected':'false', 'aria-expanded':'false' })
-            $(collparent).find('div:not(.collapse,.panel-body), h4').attr('role','presentation')
-            collparent.attr({ 'role' : 'tablist', 'aria-multiselectable' : 'true' })
-            collpanel.attr({ 'role':'tabpanel', 'aria-labelledby':collid })
+            colltab.attr({ 'aria-controls': collpanel.attr('id'), 'data-ay11-role':'tab', 'aria-expanded':'false' })
+            $(collparent).find('div:not(.collapse,.panel-body), h4').attr('data-ay11-role','presentation')
+            collparent.attr({ 'data-ay11-role' : 'tablist', 'aria-multiselectable' : 'true' })
+            collpanel.attr({ 'data-ay11-role':'tabpanel', 'aria-labelledby':collid })
 
             if(!hasopenpanel && parentpanel.is(parentfirstchild)) {
               colltab.attr({ 'tabindex':'0' })
               collpanel.attr({ 'tabindex':'-1' })
             }else if(collpanel.hasClass('in')){
-              colltab.attr({ 'aria-selected':'true', 'aria-expanded':'true', 'tabindex':'0' })
+              colltab.attr({ 'aria-expanded':'true', 'tabindex':'0' })
               collpanel.attr({ 'tabindex':'0', 'aria-hidden':'false' })
             }else{
               colltab.attr({ 'tabindex':'-1' })
@@ -52,15 +52,15 @@
         if ($.support.transition) {
           this.$element.one($.support.transition.end, function(){
 
-              prevTab.attr({ 'aria-selected':'false','aria-expanded':'false', 'tabIndex':'-1' })
+              prevTab.attr({ 'aria-expanded':'false', 'tabIndex':'-1' })
               $prevPanel.attr({ 'aria-hidden' : 'true','tabIndex' : '-1'})
 
-              curTab.attr({ 'aria-selected':'true','aria-expanded':'true', 'tabIndex':'0' })
+              curTab.attr({ 'aria-expanded':'true', 'tabIndex':'0' })
 
               if($curPanel.hasClass('in')){
                 $curPanel.attr({ 'aria-hidden' : 'false','tabIndex' : '0' })
               }else{
-                curTab.attr({ 'aria-selected':'false','aria-expanded':'false'})
+                curTab.attr({ 'aria-expanded':'false'})
                 $curPanel.attr({ 'aria-hidden' : 'true','tabIndex' : '-1' })
               }
           })
@@ -73,7 +73,7 @@
     $.fn.collapse.Constructor.prototype.keydown = function (e) {
       var $this = $(this)
       , $items
-      , $tablist = $this.closest('div[role=tablist] ')
+      , $tablist = $this.closest('div[data-ay11-role=tablist] ')
       , index
       , k = e.which || e.keyCode
 
@@ -81,7 +81,7 @@
       if (!/(32|37|38|39|40)/.test(k)) return
       if(k==32) $this.click()
 
-      $items = $tablist.find('[role=tab]')
+      $items = $tablist.find('[data-ay11-role=tab]')
       index = $items.index($items.filter(':focus'))
 
       if (k == 38 || k == 37) index--                                        // up & left
@@ -97,4 +97,4 @@
     }
 
     $(document).on('keydown.collapse.data-api','[data-toggle="collapse"]' ,  $.fn.collapse.Constructor.prototype.keydown);
-    
+
