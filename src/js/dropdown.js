@@ -5,13 +5,13 @@
       , $par
       , firstItem
       , focusDelay = 200
-      , menus = $(toggle).parent().find('ul').attr('role','menu')
-      , lis = menus.find('li').attr('role','presentation')
+      , menus = $(toggle).parent().find('ul').attr('data-ay11-role','menu')
+      , lis = menus.find('li')
 
-    // add menuitem role and tabIndex to dropdown links
-    lis.find('a').attr({'role':'menuitem', 'tabIndex':'-1'})
+    // add menuitem ay11 role
+    lis.find('a').attr({'data-ay11-role':'menuitem'})
     // add aria attributes to dropdown toggle
-    $(toggle).attr({ 'aria-haspopup':'true', 'aria-expanded': 'false'})
+    $(toggle).attr({'aria-expanded': 'false'})
 
     $(toggle).parent()
       // Update aria-expanded when open
@@ -21,7 +21,7 @@
         $toggle.attr('aria-expanded','true')
         $toggle.on('keydown.bs.dropdown', $.proxy(function (ev) {
           setTimeout(function() {
-            firstItem = $('.dropdown-menu [role=menuitem]:visible', $par)[0]
+            firstItem = $('.dropdown-menu [data-ay11-role=menuitem]:visible', $par)[0]
             try{ firstItem.focus()} catch(ex) {}
           }, focusDelay)
         }, this))
@@ -50,4 +50,4 @@
           }
         }, 150)
        })
-      .on('keydown.bs.dropdown.data-api', toggle + ', [role=menu]' , $.fn.dropdown.Constructor.prototype.keydown);
+      .on('keydown.bs.dropdown.data-api', toggle + ', [data-ay11-role=menu]' , $.fn.dropdown.Constructor.prototype.keydown);
